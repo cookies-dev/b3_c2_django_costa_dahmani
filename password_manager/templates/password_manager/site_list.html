@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<body class="antialiased font-sans bg-gray-200 dark:bg-gray-900">
+    <div class="container mx-auto px-4 sm:px-8">
+
+        <button id="emcee"
+            class="w-20 h-10 absolute bottom-10 right-10 rounded-lg bg-white flex items-center transition duration-300 focus:outline-none shadow"
+            onclick="toggleTheme()">
+            <div id="switch-toggle"
+                class="w-12 h-12 relative rounded-lg transition duration-500 transform bg-yellow-500 -translate-x-2 p-1 text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </div>
+        </button>
+
+        <div class="grid grid-cols-2">
+
+            <div class="py-8">
+                <div>
+                    <h2 class="text-2xl font-semibold leading-tight text-gray-800 dark:text-white">Password Manager</h2>
+                </div>
+                <div class="my-2 flex sm:flex-row flex-col">
+                    <div class="block relative">
+                        <span class="h-full absolute inset-y-0 left-0 flex items-center pl-2">
+                            <svg viewBox="0 0 24 24" class="h-4 w-4 fill-current text-gray-500">
+                                <path
+                                    d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1114.32 4.906l5.387 5.387a1 1 0 01-1.414 1.414l-5.387-5.387A8 8 0 012 10z">
+                                </path>
+                            </svg>
+                        </span>
+                        <input placeholder="Search" id="search"
+                            class="appearance-none rounded-r rounded-lg sm:rounded-lg-none border border-gray-400 border-b block pl-8 pr-6 py-2 w-full bg-white text-sm placeholder-gray-400 text-gray-700 focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none dark:bg-gray-700 dark:text-white dark:placeholder-gray-500 dark:border-gray-500" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
+            <div class="inline-block min-w-full shadow rounded-lg overflow-hidden">
+                <table class="min-w-full leading-normal table-auto">
+                    <thead>
+                        <tr>
+                            <th
+                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider dark:bg-gray-800 dark:text-white">
+                                Name
+                            </th>
+                            <th
+                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider dark:bg-gray-800 dark:text-white">
+                                Url
+                            </th>
+                            <th
+                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider dark:bg-gray-800 dark:text-white">
+                                username
+                            </th>
+                            <th
+                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider dark:bg-gray-800 dark:text-white">
+                                Password
+                            </th>
+                            <th
+                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider dark:bg-gray-800 dark:text-white">
+                                Actions
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for site in sites %}
+                        <tr data-name="{{ site.name }}" data-edit="{% url 'edit_site' pk=site.pk %}"
+                            data-url="{{ site.url }}" data-username="{{ site.username }}"
+                            data-password="{{ site.password }}" data-pk="{{ site.pk }}"
+                            class="bg-white text-gray-900 dark:bg-slate-800 dark:text-white">
+                            <td class="px-5 py-5 border-b border-gray-200 dark:border-gray-700 text-sm">
+                                <div class="flex items-center">
+                                    <div class="pp-image flex-shrink-0 w-10 h-10">
+                                        <img class="h-10 w-10 rounded-lg overflow-hidden text-2xl flex items-center justify-center"
+                                            src="https://s2.googleusercontent.com/s2/favicons?sz=128&domain_url={{ site.url }}"
+                                            onload="handleLoad(this)" alt="{{ site.name }}">
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class=" whitespace-no-wrap font-semibold">
+                                            {{ site.name }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-5 py-5 border-b border-gray-200 dark:border-gray-700 text-sm">
+                                <a class=" whitespace-no-wrap underline" href="{{ site.url }}" target="_blank">
+                                    {{ site.url }}
+                                </a>
+                            </td>
+                            <td class="px-5 py-5 border-b border-gray-200 dark:border-gray-700 text-sm">
+                                <p class=" whitespace-no-wrap">
+                                    {{ site.username }}
+                                </p>
+                            </td>
+                            <td class="px-5 py-5 border-b border-gray-200 dark:border-gray-700 text-sm">
+                                <div class="flex-1 block relative">
+                                    <input type="password" disabled
+                                        class="w-full leading-none text-green-900 p-3 focus:outline-none border-0 bg-green-200 rounded-lg font-semibold"
+                                        placeholder="Password" name="password" value="{{ site.password }}" />
+                                    <i
+                                        class="show-password h-full absolute inset-y-0 right-0 flex items-center pr-3 fa-solid fa-eye-slash ml-2 cursor-pointer text-black"></i>
+                                </div>
+                            </td>
+                            <td class="px-5 py-5 border-b border-gray-200 dark:border-gray-700 text-sm">
+                                <button
+                                    class="edit-pair relative inline-block px-3 py-1 font-semibold text-yellow-900 leading-tight cursor-pointer mb-2">
+                                    <span aria-hidden
+                                        class="absolute inset-0 bg-yellow-200 opacity-50 rounded-lg"></span>
+                                    <span class="relative">
+                                        <i class="edit-pair fa-solid fa-pen-to-square"></i>
+                                    </span>
+                                </button>
+
+                                <a class="relative inline-block px-3 py-1 font-semibold text-red-900 leading-tight cursor-pointer mt-2"
+                                    href="{% url 'delete_site' pk=site.pk %}">
+                                    <span aria-hidden class="absolute inset-0 bg-red-200 opacity-50 rounded-lg"></span>
+                                    <span class="relative">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </span>
+                                </a>
+
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script>
+        const handleLoad = (target) => {
+            const width = target.naturalWidth;
+            const height = target.naturalHeight;
+            if (width === 16 && height === 16) {
+                console.log('Icon found', target.closest('tr').dataset.pk);
+                IconNotFound(target.alt, target.closest('tr').dataset.pk);
+            }
+        }
+        const IconNotFound = (name, pk) => {
+            let ppImage = document.querySelector('tr[data-pk="' + pk + '"]').querySelector('.pp-image');
+            let firstLetter = name.charAt(0).toUpperCase();
+            let secondLetter = name.charAt(1).toUpperCase();
+            ppImage.innerHTML = '<span class="inline-block h-10 w-10 rounded-lg overflow-hidden bg-green-500 text-white text-2xl flex items-center justify-center">' + firstLetter + secondLetter + '</span>';
+        }
+
+        document.addEventListener('click', function (event) {
+            if (event.target.matches('.show-password')) {
+                const passwordInput = event.target.closest('div').querySelector('input[name="password"]');
+                if (passwordInput.getAttribute('type') === 'password') {
+                    passwordInput.setAttribute('type', 'text');
+                    event.target.classList.remove('fa-eye-slash');
+                    event.target.classList.add('fa-eye');
+                } else {
+                    passwordInput.setAttribute('type', 'password');
+                    event.target.classList.remove('fa-eye');
+                    event.target.classList.add('fa-eye-slash');
+                }
+            }
+            if (event.target.matches('.edit-pair')) {
+                document.querySelector('#static-modal').classList.remove('hidden');
+                document.querySelector('form').setAttribute('action', event.target.closest('tr').dataset.edit);
+                const data = {
+                    pk: event.target.closest('tr').dataset.pk,
+                    name: event.target.closest('tr').dataset.name,
+                    url: event.target.closest('tr').dataset.url,
+                    username: event.target.closest('tr').dataset.username,
+                    password: event.target.closest('tr').dataset.password,
+                }
+
+                const { elements } = document.querySelector('form')
+                for (const [key, value] of Object.entries(data)) {
+                    const field = elements.namedItem(key)
+                    field && (field.value = value)
+                }
+            }
+        }, false);
+
+        document.getElementById('search').addEventListener('keyup', function (e) {
+            const search = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                row.style.display = 'none';
+                if (row.dataset.name.toLowerCase().indexOf(search) != -1) {
+                    row.style.display = 'table-row';
+                }
+            });
+        });
+
+    </script>
+</body>
+
+{% endblock %}
