@@ -25,3 +25,22 @@ def site_list(request: HttpRequest) -> HttpResponse:
     form = SiteForm(request.POST)
     sites: BaseManager[Site] = Site.objects.filter(user=request.user)
     return render(request, "password_manager/site_list.html", {"sites": sites, "form": form})
+
+
+def add_site(request: HttpRequest) -> JsonResponse:
+    """
+    Add a new site to the password manager.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        JsonResponse: A JSON response indicating the success or failure of the operation.
+    """
+    if request.method == "POST":
+        form = SiteForm(request.POST)
+        if form.is_valid():
+            site = form.save(commit=False)
+            site.user = request.user
+            site.save()
+    return redirect("site_list")
