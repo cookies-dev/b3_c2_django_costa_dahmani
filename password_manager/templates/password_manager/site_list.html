@@ -191,6 +191,39 @@
         });
 
     </script>
+    <script>
+        const open = document.querySelector('#open-modal');
+        const close = document.querySelector('#close-modal');
+        const cancel = document.querySelector('#cancel-modal');
+        const submit = document.querySelector('#submit-modal');
+        const form = document.querySelector('form');
+
+        open.addEventListener('click', () => {
+            document.querySelector('#static-modal').classList.remove('hidden');
+            form.setAttribute('action', form.dataset.add);
+        });
+
+        close.addEventListener('click', () => {
+            document.querySelector('#static-modal').classList.add('hidden');
+            document.querySelector('form').reset();
+            form.removeAttribute('action');
+        });
+
+        cancel.addEventListener('click', () => {
+            document.querySelector('#static-modal').classList.add('hidden');
+            document.querySelector('form').reset();
+            form.removeAttribute('action');
+        });
+    </script>
+    <script>
+        const randomPassword = document.querySelector('#random-password');
+        const passwordInput = document.querySelector('#id_password');
+        const rdn = () => Math.random().toString(36).slice(-10).substring(2)
+
+        randomPassword.addEventListener('click', () => {
+            passwordInput.value = rdn() + rdn();
+        });
+    </script>
 </body>
 
 {% endblock %}
