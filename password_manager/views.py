@@ -9,7 +9,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
 from .models import Site
-from .forms import SiteForm
+from .forms import SiteForm, SignupForm
 
 
 def site_list(request: HttpRequest) -> HttpResponse:
@@ -82,3 +82,27 @@ def delete_site(request: HttpRequest, pk: int) -> HttpResponse:
     site = Site.objects.get(pk=pk)
     site.delete()
     return redirect("site_list")
+
+def user_signup(request: HttpRequest):
+    """
+    View function that handles the user signup process.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response object containing the rendered HTML template.
+    """
+    if request.method == "POST":
+        form = SignupForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect("site_list")
+        else:
+            for field in form.errors:
+                for error in form.errors[field]:
+                    messages.error(request, f"{field}: {error}")
+    else:
+        form = SignupForm()
+    return render(request, "password_manager/signup.html", {"form": form})
