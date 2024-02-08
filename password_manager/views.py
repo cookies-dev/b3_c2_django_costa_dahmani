@@ -9,7 +9,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
 from .models import Site
-from .forms import SiteForm
+from .forms import SiteForm, LoginForm
 
 
 def site_list(request: HttpRequest) -> HttpResponse:
@@ -82,3 +82,43 @@ def delete_site(request: HttpRequest, pk: int) -> HttpResponse:
     site = Site.objects.get(pk=pk)
     site.delete()
     return redirect("site_list")
+
+
+def user_login(request: HttpRequest):
+    """
+    View function that handles the user login process.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response object containing the rendered HTML template.
+    """
+    if request.method == "POST":
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data["username"]
+            password = form.cleaned_data["password"]
+            user = authenticate(request, username=username, password=password)
+            if user:
+                login(request, user)
+                return redirect("site_list")
+            else:
+                messages.error(request, "Invalid username or password.")
+    else:
+        form = LoginForm()
+    return render(request, "password_manager/login.html", {"form": form})
+
+
+def user_logout(request: HttpRequest):
+    """
+    View function that handles the user logout process.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response object redirecting to the login page.
+    """
+    logout(request)
+    return redirect("login")
