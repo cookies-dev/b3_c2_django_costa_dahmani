@@ -8,4 +8,5 @@ urlpatterns = [
     path("add/", add_site, name="add_site"),
     path("edit/<int:pk>/", edit_site, name="edit_site"),
     path("delete/<int:pk>/", delete_site, name="delete_site"),
+    path("accounts/signup/", user_signup, name="signup"),
 ]
