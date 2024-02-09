@@ -2,7 +2,7 @@ from multiprocessing.managers import BaseManager
 
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, authenticate
-from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse, StreamingHttpResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -10,6 +10,8 @@ from django.contrib.auth.decorators import login_required
 
 from .models import Site
 from .forms import SiteForm
+
+import csv
 
 
 def site_list(request: HttpRequest) -> HttpResponse:
@@ -82,3 +84,24 @@ def delete_site(request: HttpRequest, pk: int) -> HttpResponse:
     site = Site.objects.get(pk=pk)
     site.delete()
     return redirect("site_list")
+
+class Echo:
+    """An object that implements just the write method of the file-like
+    interface.
+    """
+
+    def write(self, value):
+        """Write the value by returning it, instead of storing in a buffer."""
+        return value
+    
+def export_csv(request: HttpRequest):
+
+    queryset = Site.objects.all()
+
+    pseudo_buffer = Echo()
+    writer = csv.writer(pseudo_buffer)
+    return StreamingHttpResponse(
+        (writer.writerow([field for field in row]) for row in queryset.values_list()),
+        content_type="text/csv",
+        headers={"Content-Disposition": 'attachment; filename="export.csv"'},
+    )
