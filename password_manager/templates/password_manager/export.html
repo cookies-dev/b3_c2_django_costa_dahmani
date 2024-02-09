@@ -1,0 +1,15 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Téléchargement de CSV</title>
+    <script type="text/javascript">
+        function downloadCSV() {
+            window.location.href = '{% url "export" %}'; // Remplacez par l'URL de votre vue d'export CSV
+        }
+    </script>
+</head>
+<body onload="downloadCSV();">
+    <h1>Téléchargement en cours...</h1>
+    <p>Si le téléchargement ne commence pas, <a href="{% url 'export' %}">cliquez ici</a>.</p>
+</body>
+</html>
