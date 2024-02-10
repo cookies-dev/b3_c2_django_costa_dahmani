@@ -9,4 +9,6 @@ urlpatterns = [
     path("edit/<int:pk>/", edit_site, name="edit_site"),
     path("delete/<int:pk>/", delete_site, name="delete_site"),
     path("export/", export_csv, name="export"),
+    path("accounts/login/", user_login, name="login"),
+    path("accounts/logout/", user_logout, name="logout"),
 ]

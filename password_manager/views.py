@@ -9,7 +9,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
 from .models import Site
-from .forms import SiteForm
+from .forms import SiteForm, LoginForm
 
 import csv
 
@@ -27,7 +27,6 @@ def site_list(request: HttpRequest) -> HttpResponse:
     form = SiteForm(request.POST)
     sites: BaseManager[Site] = Site.objects.filter(user=request.user)
     return render(request, "password_manager/site_list.html", {"sites": sites, "form": form})
-
 
 
 def add_site(request: HttpRequest) -> JsonResponse:
@@ -49,7 +48,6 @@ def add_site(request: HttpRequest) -> JsonResponse:
     return redirect("site_list")
 
 
-
 def edit_site(request: HttpRequest, pk: int) -> HttpResponse:
     """
     View function that handles the editing of a site for the authenticated user.
@@ -69,7 +67,6 @@ def edit_site(request: HttpRequest, pk: int) -> HttpResponse:
     return redirect("site_list")
 
 
-
 def delete_site(request: HttpRequest, pk: int) -> HttpResponse:
     """
     View function that handles the deletion of a site for the authenticated user.
@@ -85,6 +82,7 @@ def delete_site(request: HttpRequest, pk: int) -> HttpResponse:
     site.delete()
     return redirect("site_list")
 
+
 class Echo:
     """An object that implements just the write method of the file-like
     interface.
@@ -93,7 +91,8 @@ class Echo:
     def write(self, value):
         """Write the value by returning it, instead of storing in a buffer."""
         return value
-    
+
+
 def export_csv(request: HttpRequest):
 
     queryset = Site.objects.all()
@@ -105,3 +104,43 @@ def export_csv(request: HttpRequest):
         content_type="text/csv",
         headers={"Content-Disposition": 'attachment; filename="export.csv"'},
     )
+
+
+def user_login(request: HttpRequest):
+    """
+    View function that handles the user login process.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response object containing the rendered HTML template.
+    """
+    if request.method == "POST":
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data["username"]
+            password = form.cleaned_data["password"]
+            user = authenticate(request, username=username, password=password)
+            if user:
+                login(request, user)
+                return redirect("site_list")
+            else:
+                messages.error(request, "Invalid username or password.")
+    else:
+        form = LoginForm()
+    return render(request, "password_manager/login.html", {"form": form})
+
+
+def user_logout(request: HttpRequest):
+    """
+    View function that handles the user logout process.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response object redirecting to the login page.
+    """
+    logout(request)
+    return redirect("login")
