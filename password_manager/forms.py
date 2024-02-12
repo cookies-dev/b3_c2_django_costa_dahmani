@@ -4,6 +4,19 @@ from django.contrib.auth.models import User
 
 from .models import Site
 
+
+class SignupForm(UserCreationForm):
+    """
+    Form used for user signup.
+
+    Inherits from UserCreationForm and adds fields for username, password1, and password2.
+    """
+
+    class Meta:
+        model = User
+        fields = ["username", "password1", "password2"]
+
+
 class LoginForm(forms.Form):
     """
     A form for user login.
@@ -13,6 +26,7 @@ class LoginForm(forms.Form):
 
     username = forms.CharField()
     password = forms.CharField(widget=forms.PasswordInput)
+
 
 class SiteForm(forms.ModelForm):
     """

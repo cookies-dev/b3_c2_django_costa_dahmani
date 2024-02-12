@@ -14,6 +14,7 @@ from .forms import SiteForm, LoginForm
 import csv
 
 
+@login_required
 def site_list(request: HttpRequest) -> HttpResponse:
     """
     View function that displays a list of sites for the authenticated user.
@@ -29,6 +30,7 @@ def site_list(request: HttpRequest) -> HttpResponse:
     return render(request, "password_manager/site_list.html", {"sites": sites, "form": form})
 
 
+@login_required
 def add_site(request: HttpRequest) -> JsonResponse:
     """
     Add a new site to the password manager.
@@ -48,6 +50,7 @@ def add_site(request: HttpRequest) -> JsonResponse:
     return redirect("site_list")
 
 
+@login_required
 def edit_site(request: HttpRequest, pk: int) -> HttpResponse:
     """
     View function that handles the editing of a site for the authenticated user.
@@ -67,6 +70,7 @@ def edit_site(request: HttpRequest, pk: int) -> HttpResponse:
     return redirect("site_list")
 
 
+@login_required
 def delete_site(request: HttpRequest, pk: int) -> HttpResponse:
     """
     View function that handles the deletion of a site for the authenticated user.
@@ -83,27 +87,24 @@ def delete_site(request: HttpRequest, pk: int) -> HttpResponse:
     return redirect("site_list")
 
 
-class Echo:
-    """An object that implements just the write method of the file-like
-    interface.
+def user_signup(request: HttpRequest):
     """
+    View function that handles the user signup process.
 
-    def write(self, value):
-        """Write the value by returning it, instead of storing in a buffer."""
-        return value
+    Args:
+        request (HttpRequest): The HTTP request object.
 
-
-def export_csv(request: HttpRequest):
-
-    queryset = Site.objects.all()
-
-    pseudo_buffer = Echo()
-    writer = csv.writer(pseudo_buffer)
-    return StreamingHttpResponse(
-        (writer.writerow([field for field in row]) for row in queryset.values_list()),
-        content_type="text/csv",
-        headers={"Content-Disposition": 'attachment; filename="export.csv"'},
-    )
+    Returns:
+        HttpResponse: The HTTP response object containing the rendered HTML template.
+    """
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("login")
+    else:
+        form = UserCreationForm()
+    return render(request, "password_manager/signup.html", {"form": form})
 
 
 def user_login(request: HttpRequest):
@@ -144,3 +145,26 @@ def user_logout(request: HttpRequest):
     """
     logout(request)
     return redirect("login")
+
+
+class Echo:
+    """An object that implements just the write method of the file-like
+    interface.
+    """
+
+    def write(self, value):
+        """Write the value by returning it, instead of storing in a buffer."""
+        return value
+
+
+def export_csv(request: HttpRequest):
+
+    queryset = Site.objects.all()
+
+    pseudo_buffer = Echo()
+    writer = csv.writer(pseudo_buffer)
+    return StreamingHttpResponse(
+        (writer.writerow([field for field in row]) for row in queryset.values_list()),
+        content_type="text/csv",
+        headers={"Content-Disposition": 'attachment; filename="export.csv"'},
+    )

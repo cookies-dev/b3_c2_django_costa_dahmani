@@ -10,5 +10,19 @@ urlpatterns = [
     path("delete/<int:pk>/", delete_site, name="delete_site"),
     path("export/", export_csv, name="export"),
     path("accounts/login/", user_login, name="login"),
+    path("accounts/signup/", user_signup, name="signup"),
     path("accounts/logout/", user_logout, name="logout"),
 ]
+
+"""
+URL patterns for the password_manager app.
+
+Includes the following paths:
+- "" (empty path): site_list view
+- "add/": add_site view
+- "edit/<int:pk>/": edit_site view
+- "delete/<int:pk>/": delete_site view
+- "accounts/login/": user_login view
+- "accounts/signup/": user_signup view
+- "accounts/logout/": user_logout view
+"""

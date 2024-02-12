@@ -1,8 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
 class Meta:
-    app_label = 'password_manager'
+    app_label = "password_manager"
+
 
 class Site(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
