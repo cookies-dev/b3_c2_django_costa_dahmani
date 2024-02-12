@@ -25,6 +25,7 @@ pip install -r requirements.txt
 3. Apply database migrations:
 
 ```bash
+python manage.py makemigrations password_manager
 python manage.py migrate
 ```
 
